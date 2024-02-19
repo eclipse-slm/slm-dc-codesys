@@ -2,7 +2,7 @@
   "id": "0ebcf9b3-d17c-484e-a4ef-4ca5df48a28c",
   "capabilityClass": "DeploymentCapability",
   "name": "CODESYS",
-  "logo": "mdi-deployed-cube",
+  "logo": "mdi-cube",
   "type": [
     "SETUP",
     "DEPLOY"
@@ -10,32 +10,32 @@
   "connection": "tcp",
   "actions": {
     "DEPLOY": {
-      "capabilityActionClass": "AwxCapabilityAction",
-      "capabilityActionType": "DEPLOY",
+      "actionClass": "AwxAction",
+      "actionType": "DEPLOY",
       "awxRepo": "https://github.com/eclipse-slm/slm-dc-codesys",
       "awxBranch": "main",
       "playbook": "deploy.yml",
       "connectionTypes": ["ssh"]
     },
     "UNINSTALL": {
-      "capabilityActionClass": "AwxCapabilityAction",
-      "capabilityActionType": "UNINSTALL",
+      "actionClass": "AwxAction",
+      "actionType": "UNINSTALL",
       "awxRepo": "https://github.com/eclipse-slm/slm-dc-codesys",
       "awxBranch": "main",
       "playbook": "uninstall.yml",
       "connectionTypes": ["ssh"]
     },
     "INSTALL": {
-      "capabilityActionClass": "AwxCapabilityAction",
-      "capabilityActionType": "INSTALL",
+      "actionClass": "AwxAction",
+      "actionType": "INSTALL",
       "awxRepo": "https://github.com/eclipse-slm/slm-dc-codesys",
       "awxBranch": "main",
       "playbook": "install.yml",
       "connectionTypes": ["ssh"]
     },
     "UNDEPLOY": {
-      "capabilityActionClass": "AwxCapabilityAction",
-      "capabilityActionType": "UNDEPLOY",
+      "actionClass": "AwxAction",
+      "actionType": "UNDEPLOY",
       "awxRepo": "https://github.com/eclipse-slm/slm-dc-codesys",
       "awxBranch": "main",
       "playbook": "undeploy.yml",
