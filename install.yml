@@ -12,6 +12,13 @@
   hosts: ssh
   gather_facts: yes
   tasks:
+    - name: Install required packages
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        "unzip"
+
     - name: Download Control
       ansible.builtin.get_url:
         url: https://store.codesys.com/ftp_download/3S/LinuxSL/2302000005/4.10.0.0/CODESYS%20Control%20for%20Linux%20SL%204.10.0.0.package
