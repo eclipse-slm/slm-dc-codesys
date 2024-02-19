@@ -25,6 +25,12 @@
         option: Application.1
         value: Name
         backup: true
+    - name: Install required packages
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - "python3-pip"
     - name: Install botocore, boto3 python package
       ansible.builtin.pip:
         name:
