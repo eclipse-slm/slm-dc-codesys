@@ -1,0 +1,52 @@
+---
+- name: "Create inventory with target host(s)"
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Use inventory Helper to setup ansible inventory
+      ansible.builtin.include_role:
+        name: inventory_helper
+
+- name: "Setup CODESYS for Linux"
+  hosts: ssh
+  gather_facts: yes
+  tasks:
+    - name: Download Control
+      ansible.builtin.get_url:
+        url: https://store.codesys.com/ftp_download/3S/LinuxSL/2302000005/4.10.0.0/CODESYS%20Control%20for%20Linux%20SL%204.10.0.0.package
+        dest: /tmp/control.package
+        mode: '755'
+
+    - name: Download Edge Gateway
+      ansible.builtin.get_url:
+        url: https://store.codesys.com/ftp_download/3S/EdgeGatewayLinux/000120/4.10.0.0/CODESYS%20Edge%20Gateway%20for%20Linux%204.10.0.0.package
+        dest: /tmp/edge.package
+        mode: '755'
+
+    - name: Unarchive CODESYS Control for Linux SL File
+      shell: unzip -p /tmp/control.package '*codesyscontrol*.deb' > /tmp/codesyscontrol.deb
+
+    - name: Unarchive CODESYS codemeter for Linux SL File
+      shell: unzip -p /tmp/control.package '*codemeter*.deb' > /tmp/codemeter.deb
+
+    - name: Unarchive CODESYS Edge for Linux SL File
+      shell: unzip -p /tmp/edge.package '*.deb' > /tmp/edge.deb
+
+    - name: Install Codemeter
+      command: dpkg -i /tmp/codemeter.deb
+
+    - name: Install Codesys control
+      command: dpkg -i /tmp/codesyscontrol.deb
+
+    - name: Install Edge
+      command: dpkg -i /tmp/edge.deb
+
+    - name: Run Edge Gateway
+      command: service codesysedge start
+
+    - name: Run Codemeter
+      command: service codemeter start
+
+    - name: Run Laufzeitsystem
+      command: /etc/init.d/codesyscontrol start

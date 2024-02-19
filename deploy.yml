@@ -1,0 +1,66 @@
+---
+- name: "Create inventory with target host(s)"
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Use inventory Helper to setup ansible inventory
+      ansible.builtin.include_role:
+        name: inventory_helper
+
+- name: "Deploy Boot-Application for CODESYS for Linux"
+  hosts: ssh
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Set Minio Facts
+      set_fact:
+          minio_url: "{{ lookup('env', 'MINIO_URL') }}"
+          minio_access_key: "{{ lookup('env', 'MINIO_ACCESS_KEY') }}"
+          minio_secret_key: "{{ lookup('env', 'MINIO_SECRET_KEY') }}"
+    - name: Add the required config file
+      ini_file:
+        path: /etc/CODESYSControl_User.cfg
+        section: CmpApp
+        option: Application.1
+        value: Name
+        backup: true
+    - name: Install botocore, boto3 python package
+      ansible.builtin.pip:
+        name:
+          - botocore
+          - boto3
+
+    - name: Simple GET operation
+      amazon.aws.s3_object:
+        endpoint_url: "{{ minio_url }}"
+        aws_access_key_id: "{{ minio_access_key }}"
+        aws_secret_access_key: "{{ minio_secret_key }}"
+        bucket: slm
+        object: "{{ application_path }}"
+        dest: /tmp/application.zip
+        mode: get
+      delegate_to: localhost
+
+    - name: Copy
+      copy:
+        src: /tmp/application.zip
+        dest: /tmp/application.zip
+
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: /var/opt/codesys/PlcLogic
+        state: directory
+        mode: '0755'
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: /var/opt/codesys/PlcLogic/MyApplication
+        state: directory
+        mode: '0755'
+    - name: Unarchive Application
+      ansible.builtin.unarchive:
+        src: /tmp/application.zip
+        dest: /var/opt/codesys/PlcLogic/MyApplication
+        remote_src: yes
+    - name: Restart Laufzeitsystem
+      command: /etc/init.d/codesyscontrol restart

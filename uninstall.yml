@@ -1,0 +1,33 @@
+---
+- name: "Create inventory with target host(s)"
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Use inventory Helper to setup ansible inventory
+      ansible.builtin.include_role:
+        name: inventory_helper
+
+- name: "Uninstall Codesys"
+  hosts: ssh
+  gather_facts: yes
+  become_user: root
+  become: yes
+  tasks:
+    - name: Stop Laufzeitsystem
+      command: /etc/init.d/codesyscontrol stop
+
+    - name: Stop Codemeter
+      command: service codemeter stop
+
+    - name: Stop Edge Gateway
+      command: service codesysedge stop
+
+    - name: Uninstall Control
+      command: dpkg -r codesyscontrol
+
+    - name: Uninstall Codemeter
+      command: dpkg -r codemeter
+
+    - name: Uninstall Edge
+      command: dpkg -r edge
