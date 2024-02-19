@@ -17,7 +17,7 @@
         name: "{{ item }}"
         state: present
       loop:
-        "unzip"
+        - "unzip"
 
     - name: Download Control
       ansible.builtin.get_url:
